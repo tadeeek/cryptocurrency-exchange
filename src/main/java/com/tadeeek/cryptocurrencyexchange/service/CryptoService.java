@@ -21,8 +21,6 @@ public class CryptoService {
 
 
     public Mono<Crypto> getCurrencies(String currency) {
-        System.out.println("Getting currenciess... ");
-
         Mono<Crypto> cryptoMono = webClientBuilder.build().get().uri("/{currency}", currency)
                 .accept(MediaType.APPLICATION_JSON).retrieve().bodyToMono(ConsumedCrypto.class).map(crypto::convertConsumedCryptoToCrypto);
 
@@ -30,8 +28,6 @@ public class CryptoService {
     }
 
     public Mono<Crypto> getFilteredCurrencies(String currency, List<String> filter) {
-        System.out.println("Getting filtered currenciess... ");
-
         Mono<Crypto> cryptoMono =
                 webClientBuilder.build().get().uri("/{currency}", currency).accept(MediaType.APPLICATION_JSON)
                         .retrieve()
