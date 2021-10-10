@@ -2,6 +2,7 @@ package com.tadeeek.cryptocurrencyexchange.service;
 
 import com.tadeeek.cryptocurrencyexchange.model.ConsumedCrypto;
 
+import com.tadeeek.cryptocurrencyexchange.model.Crypto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -13,17 +14,20 @@ public class CryptoService {
 
     @Autowired
     private WebClient.Builder webClientBuilder;
+    @Autowired
+    private Crypto crypto;
 
-    public Mono<ConsumedCrypto> getCurrencies(String currency) {
+
+    public Mono<Crypto> getCurrencies(String currency) {
         System.out.println("Getting currenciess... ");
 
-        Mono<ConsumedCrypto> consumedCryptoMono = webClientBuilder.build().get().uri("/{currency}", currency)
-                .accept(MediaType.APPLICATION_JSON).retrieve().bodyToMono(ConsumedCrypto.class);
+        Mono<Crypto> cryptoMono = webClientBuilder.build().get().uri("/{currency}", currency)
+                .accept(MediaType.APPLICATION_JSON).retrieve().bodyToMono(ConsumedCrypto.class).map(crypto::convertConsumedCryptoToCrypto).log();
 
         //log
-        consumedCryptoMono.subscribe(System.out::println);
+        //cryptoMono.subscribe(System.out::println);
 
-        return  consumedCryptoMono;
+        return cryptoMono;
     }
 
 }
