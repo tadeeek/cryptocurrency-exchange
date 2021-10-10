@@ -3,11 +3,10 @@ package com.tadeeek.cryptocurrencyexchange.controller;
 import com.tadeeek.cryptocurrencyexchange.model.Crypto;
 import com.tadeeek.cryptocurrencyexchange.service.CryptoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 
 @RestController
@@ -21,6 +20,12 @@ public class CryptoController {
     public Mono<Crypto> getCurrencies(@PathVariable String currency) {
         return  cryptoService.getCurrencies(currency);
     }
+
+    @GetMapping(value = "/currencies/{currency}", params = {"filter"})
+    public Mono<Crypto> getFilteredCrypto(@PathVariable String currency, @RequestParam List<String> filter) {
+        return cryptoService.getFilteredCurrencies(currency, filter);
+    }
+
 
 
 }
