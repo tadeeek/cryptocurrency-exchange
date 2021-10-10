@@ -2,7 +2,9 @@ package com.tadeeek.cryptocurrencyexchange.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tadeeek.cryptocurrencyexchange.model.Crypto;
-import com.tadeeek.cryptocurrencyexchange.model.Exchange;
+import com.tadeeek.cryptocurrencyexchange.model.ExchangeCurrency;
+import com.tadeeek.cryptocurrencyexchange.model.ExchangeRequest;
+import com.tadeeek.cryptocurrencyexchange.model.ExchangeResponse;
 import com.tadeeek.cryptocurrencyexchange.service.CryptoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -30,13 +32,31 @@ public class CryptoController {
         return cryptoService.getFilteredCurrencies(currency, filter);
     }
 
-    //Testing - delete later
+    //Testing jsn - delete later
     @GetMapping(value = "/test",produces = MediaType.APPLICATION_JSON_VALUE)
-    public Exchange test() throws JsonProcessingException {
-        Exchange exchange = new Exchange("BTC", Arrays.asList("USD", "ETH"), new BigDecimal(123));
+    public ExchangeResponse test() throws JsonProcessingException {
+        ExchangeRequest exchangeRequest = new ExchangeRequest("BTC", Arrays.asList("USD", "ETH"), new BigDecimal(123));
 
-        return exchange;
+        ExchangeCurrency exchangeCurrency1 = new ExchangeCurrency("ETH", new BigDecimal(0.11), new BigDecimal(111), new BigDecimal(0.111), new BigDecimal(0.00001));
+        ExchangeCurrency exchangeCurrency2 = new ExchangeCurrency("RLC", new BigDecimal(0.22), new BigDecimal(222), new BigDecimal(0.222), new BigDecimal(0.00002));
+        ExchangeResponse exchangeResponse = new ExchangeResponse("BTC", Arrays.asList(exchangeCurrency1,exchangeCurrency2));
+
+        return exchangeResponse;
     }
+
+    @PostMapping("/exchange")
+    public ExchangeRequest exchange(@RequestBody ExchangeRequest exchangeRequest)
+    {
+        System.out.println("I have succesfully intercepted body:");
+        System.out.println(exchangeRequest.toString());
+
+        cryptoService.getFilteredCurrencies(exchangeRequest.getFrom(), exchangeRequest.getTo());
+
+        //webClient.post().uri("/doexchange").body(Mono.just(exchange) , Exchange.class).retrieve().bodyToMono(Exchange.class);
+        return exchangeRequest;
+    }
+
+
 
 
 

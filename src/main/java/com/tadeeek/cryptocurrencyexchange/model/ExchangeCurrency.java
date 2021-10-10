@@ -5,14 +5,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class Exchange {
-    private String from;
-    private List<String> to;
+@AllArgsConstructor
+public class ExchangeCurrency {
+    private String name;
+    private BigDecimal rate;
     private BigDecimal amount;
-
+    private BigDecimal fee;
+    private BigDecimal result;
 }

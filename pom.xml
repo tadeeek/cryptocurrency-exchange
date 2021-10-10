@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.tadeeek</groupId>
-	<artifactId>cryptocurrency-exchange</artifactId>
+	<artifactId>cryptocurrency-exchangeRequest</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>cryptocurrency-exchange</name>
+	<name>cryptocurrency-exchangeRequest</name>
 	<description>Simple project for Spring Boot</description>
 	<properties>
 		<java.version>11</java.version>
