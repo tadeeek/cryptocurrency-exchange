@@ -1,24 +1,19 @@
 package com.tadeeek.cryptocurrencyexchange.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tadeeek.cryptocurrencyexchange.model.Crypto;
 import com.tadeeek.cryptocurrencyexchange.model.ExchangeCurrency;
-import com.tadeeek.cryptocurrencyexchange.model.ExchangeCurrencyB;
 import com.tadeeek.cryptocurrencyexchange.model.ExchangeRequest;
 import com.tadeeek.cryptocurrencyexchange.model.ExchangeResponse;
 import com.tadeeek.cryptocurrencyexchange.service.CryptoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/currencies")
@@ -39,31 +34,35 @@ public class CryptoController {
 
     @PostMapping("/exchange")
     public Mono<ExchangeResponse> exchange(@RequestBody ExchangeRequest exchangeRequest) {
+
         Mono<Map<String, BigDecimal>> rates = cryptoService
-                .getFilteredCurrencies(exchangeRequest.getFrom(), exchangeRequest.getTo()).map(it -> it.getRates());
+                .getFilteredCurrencies(exchangeRequest.getFrom(), exchangeRequest.getTo()).map(Crypto::getRates);
 
-        Mono<List<ExchangeCurrency>> exchangeCurrencies = rates.map(el -> {
-            List<ExchangeCurrency> exchangeCurrencies1 = new ArrayList<>();
-            for (Map.Entry<String, BigDecimal> entry : el.entrySet()) {
-                // Getting data
-                String from = entry.getKey();
-                BigDecimal rate = entry.getValue();
-                BigDecimal amount = exchangeRequest.getAmount();
-                BigDecimal commission = new BigDecimal(0.01);
+        Mono<List<ExchangeCurrency>> exchangeCurrencies = rates.map(el -> el.entrySet().parallelStream().map(it->{
+                    String from = it.getKey();
+                    BigDecimal rate = it.getValue();
+                    BigDecimal amount = exchangeRequest.getAmount();
+                    BigDecimal commission = new BigDecimal("0.01");
+                    BigDecimal fee = amount.divide(rate,4, RoundingMode.HALF_UP).multiply(commission);
+                    BigDecimal result = amount.divide(rate,2, RoundingMode.HALF_UP).add(fee);
 
-                // Exchange
-                BigDecimal fee = amount.divide(rate,4, RoundingMode.HALF_UP).multiply(commission);
-                BigDecimal result = amount.divide(rate,2, RoundingMode.HALF_UP).add(fee);
+                    ExchangeCurrency exchangeCurrency = new ExchangeCurrency.Builder()
+                            .from(from)
+                            .rate(rate)
+                            .amount(amount)
+                            .fee(fee)
+                            .result(result)
+                            .build();
 
-                ExchangeCurrency exchangeCurrency = new ExchangeCurrency(from, rate, amount,  fee,  result);
-                exchangeCurrencies1.add(exchangeCurrency);
-            }
-            return exchangeCurrencies1;
-        });
+                    //Check for actual thread
+                    System.out.println(Thread.currentThread().getId());
+                    return exchangeCurrency;
 
-        Mono<ExchangeResponse> test = exchangeCurrencies.map(el -> new ExchangeResponse(exchangeRequest.getFrom(),el));
+                }).collect(Collectors.toList()));
 
-        return test;
+        Mono<ExchangeResponse> exchangeResponse = exchangeCurrencies.map(el -> new ExchangeResponse(exchangeRequest.getFrom(),el));
+
+        return exchangeResponse;
     }
 
 }
