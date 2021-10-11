@@ -65,7 +65,6 @@ public class CryptoService {
 
         }).collect(Collectors.toList()));
         //Prepare response
-
         return exchangeCurrencies.map(el -> new ExchangeResponse(exchangeRequest.getFrom(),el));
     }
 

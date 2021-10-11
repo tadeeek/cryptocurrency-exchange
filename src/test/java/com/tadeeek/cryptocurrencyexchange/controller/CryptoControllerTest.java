@@ -1,6 +1,7 @@
 package com.tadeeek.cryptocurrencyexchange.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tadeeek.cryptocurrencyexchange.controller.CryptoController;
 import com.tadeeek.cryptocurrencyexchange.model.Crypto;
 
 import okhttp3.mockwebserver.MockResponse;
@@ -54,41 +55,30 @@ class CryptoControllerTest {
     @Test
     void getCurrenciesTest() throws JsonProcessingException {
         Crypto crypto = new Crypto();
-        crypto.setSource("BTC");
-        Map<String, BigDecimal> rates = new HashMap<>();
-        rates.put("ETH", new BigDecimal(16.40614768473217722240352312));
-        rates.put("USDT", new BigDecimal(57135.392766652044543967077002));
-        rates.put("CUBE", new BigDecimal(26272.689177070701650449535119));
-        crypto.setRates(rates);
 
         mockWebServer.enqueue(new MockResponse()
-                .setBody(new ObjectMapper().writeValueAsString(crypto)) // 2DO - maybe use Json file?
+                .setBody(new ObjectMapper().writeValueAsString(crypto))
                 .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
         );
-
+        //Actually testing API
         Mono<Crypto> response = controller.getCurrencies("BTC");
         Assertions.assertEquals("BTC", response.block().getSource());
-        Assertions.assertEquals(3, response.block().getRates().size());
+
     }
 
     @Test
     void getFilteredCryptoTest() throws JsonProcessingException {
         Crypto crypto = new Crypto();
-        crypto.setSource("BTC");
-        Map<String, BigDecimal> rates = new HashMap<>();
-        rates.put("ETH", new BigDecimal(16.40614768473217722240352312));
-        rates.put("USDT", new BigDecimal(57135.392766652044543967077002));
-        crypto.setRates(rates);
 
         List<String> filter = new ArrayList<>();
         filter.add("ETH");
         filter.add("USDT");
 
         mockWebServer.enqueue(new MockResponse()
-                .setBody(new ObjectMapper().writeValueAsString(crypto)) // 2DO - maybe use Json file?
+                .setBody(new ObjectMapper().writeValueAsString(crypto))
                 .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
         );
-
+        //Actually testing API
         Mono<Crypto> response = controller.getFilteredCrypto("BTC", filter);
         Assertions.assertEquals("BTC", response.block().getSource());
         Assertions.assertEquals(2, response.block().getRates().size());
@@ -97,7 +87,9 @@ class CryptoControllerTest {
     }
 
     @Test
-    void exchange() {
+    void exchangeTest() {
+
+
     }
 
 }
