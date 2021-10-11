@@ -31,38 +31,12 @@ public class CryptoController {
     public Mono<Crypto> getFilteredCrypto(@PathVariable String currency, @RequestParam List<String> filter) {
         return cryptoService.getFilteredCurrencies(currency, filter);
     }
-
+    //2DO - exception handling...
     @PostMapping("/exchange")
     public Mono<ExchangeResponse> exchange(@RequestBody ExchangeRequest exchangeRequest) {
+        return cryptoService.exchange(exchangeRequest);
 
-        Mono<Map<String, BigDecimal>> rates = cryptoService
-                .getFilteredCurrencies(exchangeRequest.getFrom(), exchangeRequest.getTo()).map(Crypto::getRates);
 
-        Mono<List<ExchangeCurrency>> exchangeCurrencies = rates.map(el -> el.entrySet().parallelStream().map(it->{
-                    String from = it.getKey();
-                    BigDecimal rate = it.getValue();
-                    BigDecimal amount = exchangeRequest.getAmount();
-                    BigDecimal commission = new BigDecimal("0.01");
-                    BigDecimal fee = amount.divide(rate,4, RoundingMode.HALF_UP).multiply(commission);
-                    BigDecimal result = amount.divide(rate,2, RoundingMode.HALF_UP).add(fee);
-
-                    ExchangeCurrency exchangeCurrency = new ExchangeCurrency.Builder()
-                            .from(from)
-                            .rate(rate)
-                            .amount(amount)
-                            .fee(fee)
-                            .result(result)
-                            .build();
-
-                    //Check for actual thread
-                    System.out.println(Thread.currentThread().getId());
-                    return exchangeCurrency;
-
-                }).collect(Collectors.toList()));
-
-        Mono<ExchangeResponse> exchangeResponse = exchangeCurrencies.map(el -> new ExchangeResponse(exchangeRequest.getFrom(),el));
-
-        return exchangeResponse;
     }
 
 }
