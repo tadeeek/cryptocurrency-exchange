@@ -1,19 +1,14 @@
 package com.tadeeek.cryptocurrencyexchange.controller;
 
 import com.tadeeek.cryptocurrencyexchange.model.Crypto;
-import com.tadeeek.cryptocurrencyexchange.model.ExchangeCurrency;
 import com.tadeeek.cryptocurrencyexchange.model.ExchangeRequest;
 import com.tadeeek.cryptocurrencyexchange.model.ExchangeResponse;
 import com.tadeeek.cryptocurrencyexchange.service.CryptoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping("/currencies")

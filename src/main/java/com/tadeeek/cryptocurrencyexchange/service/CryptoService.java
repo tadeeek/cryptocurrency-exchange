@@ -6,7 +6,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
@@ -23,6 +22,7 @@ public class CryptoService {
         String url = "http://rest-sandbox.coinapi.io/v1/exchangerate/";
         this.webClient = webClientBuilder.baseUrl(url).defaultHeader("X-CoinAPI-Key",apikey).build();
     }
+
     @Autowired
     private Crypto crypto;
 
