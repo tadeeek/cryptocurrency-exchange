@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @SpringBootTest()
 @ExtendWith(SpringExtension.class)
@@ -64,8 +65,8 @@ class CryptoControllerTest {
         Crypto response = controller.getCurrencies("BTC").block();
 
         Assertions.assertEquals("BTC", response.getSource());
-        Assertions.assertEquals(true,response.getRates().size()>1);
-
+        Assertions.assertTrue(response.getRates().size()>1);
+        Assertions.assertTrue(response.getRates().entrySet().stream().allMatch(Objects::nonNull));
     }
 
     @Test
@@ -85,8 +86,9 @@ class CryptoControllerTest {
 
         Assertions.assertEquals("BTC", response.getSource());
         Assertions.assertEquals(2, response.getRates().size());
-        Assertions.assertEquals(true, response.getRates().containsKey("ETH"));
-        Assertions.assertEquals(true, response.getRates().containsKey("USDT"));
+        Assertions.assertTrue(response.getRates().containsKey("ETH"));
+        Assertions.assertTrue(response.getRates().containsKey("USDT"));
+
     }
 
     @Test
@@ -108,9 +110,9 @@ class CryptoControllerTest {
         ExchangeResponse response = controller.exchange(exchangeRequest).block();
 
         Assertions.assertEquals("BTC", response.getFrom());
-        Assertions.assertEquals(true, response.getExchangedCurrencies().size()>1);
-        Assertions.assertEquals(true, response.getExchangedCurrencies().stream().anyMatch(el -> "ETH".equals(el.getName())));
-
+        Assertions.assertTrue(response.getExchangedCurrencies().size()>1);
+        Assertions.assertTrue(response.getExchangedCurrencies().stream().anyMatch(el -> "ETH".equals(el.getName())));
+        Assertions.assertTrue(response.getExchangedCurrencies().stream().allMatch(Objects::nonNull));
 
     }
 
