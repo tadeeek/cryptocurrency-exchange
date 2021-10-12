@@ -104,11 +104,14 @@ class CryptoControllerTest {
                 .setBody(new ObjectMapper().writeValueAsString(exchangeResponse))
                 .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
         );
-        //Testing app response
+        //Testing app response but with actual response from API also
         ExchangeResponse response = controller.exchange(exchangeRequest).block();
 
         Assertions.assertEquals("BTC", response.getFrom());
         Assertions.assertEquals(true, response.getExchangedCurrencies().size()>1);
+        Assertions.assertEquals(true, response.getExchangedCurrencies().stream().anyMatch(el -> "ETH".equals(el.getName())));
+
+
     }
 
 }
